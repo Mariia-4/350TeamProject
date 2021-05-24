@@ -19,7 +19,7 @@ import cs350s21project.datatype.Longitude;
 
 public class Commands {
 	
-	//VIEW COMMANDS
+	//VIEW COMMANDS----------
 	public static void createWindow(String textCommand) {
 		//split string command to get values
 		String[] input = textCommand.split("[\\s()]");
