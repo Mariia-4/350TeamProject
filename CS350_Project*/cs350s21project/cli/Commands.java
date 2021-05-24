@@ -25,6 +25,7 @@ import cs350s21project.datatype.Time;
 public class Commands {
 
 	//Took out all methods not applicable to my share of the work.
+	//Made a change to test out Github
 
 	public static void defineRadar(String textCommand) 
 	{
