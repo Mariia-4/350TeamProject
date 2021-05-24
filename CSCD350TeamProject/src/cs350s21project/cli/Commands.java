@@ -2,13 +2,16 @@ package cs350s21project.cli;
 
 import java.util.*;
 import cs350s21project.controller.CommandManagers;
-//import cs350s21project.controller.command.actor.CommandActorCreateActor;
+import cs350s21project.controller.command.actor.CommandActorCreateActor;
 import cs350s21project.controller.command.actor.CommandActorDefineShip;
+import cs350s21project.controller.command.actor.CommandActorSetAltitudeDepth;
 import cs350s21project.controller.command.actor.CommandActorSetCourse;
 import cs350s21project.controller.command.actor.CommandActorSetSpeed;
 import cs350s21project.controller.command.view.CommandViewCreateWindowTop;
 import cs350s21project.controller.command.view.CommandViewDeleteWindow;
 import cs350s21project.datatype.AgentID;
+import cs350s21project.datatype.Altitude;
+import cs350s21project.datatype.CoordinateWorld3D;
 import cs350s21project.datatype.Course;
 import cs350s21project.datatype.Groundspeed;
 import cs350s21project.datatype.Latitude;
@@ -79,6 +82,7 @@ public class Commands {
 		String[] input = textCommand.split("\\s");
 		AgentID id = new AgentID(input[2]);
 		
+		//create list of AgentID's to save each munition 
 		List<AgentID> munitions = new ArrayList<AgentID>();
 		int i = 4;
 		while(i < input.length) {
@@ -92,8 +96,37 @@ public class Commands {
 	}
 	
 	public static void createActor(String textCommand) {
+		String[] input = textCommand.split("\\s");
+		AgentID id1 = new AgentID(input[2]);
+		AgentID id2 = new AgentID(input[4]);
 		
-		//CommandActorCreateActor comm = new CommandActorCreateActor();
+		//split coordinates by / to get altitude, longitude, and latitude 
+		String[] coord = input[6].split("/");
+		Altitude altitude = new Altitude(Double.parseDouble(coord[2]));
+
+		int d;
+		int m;
+		double s;
+		//Further split latitude and longitude to get degrees, minutes, seconds
+		String[] alt = coord[0].split("[*'\"]");
+		d = Integer.parseInt(alt[0]);
+		m = Integer.parseInt(alt[1]);
+		s = Double.parseDouble(alt[2]);
+		Latitude latitude = new Latitude(d, m, s);
+		
+		String[] lon = coord[1].split("[*'\"]");
+		d = Integer.parseInt(lon[0]);
+		m = Integer.parseInt(lon[1]);
+		s = Double.parseDouble(lon[2]);
+		Longitude longitude = new Longitude(d, m, s);
+
+		CoordinateWorld3D coordinate = new CoordinateWorld3D(latitude, longitude, altitude);
+		
+		Course course = new Course(Double.parseDouble(input[9]));
+		Groundspeed speed = new Groundspeed(Double.parseDouble(input[11]));
+		
+		CommandActorCreateActor comm = new CommandActorCreateActor(CommandManagers.getInstance(), textCommand, id1, id2, coordinate, course, speed);
+		CommandManagers.getInstance().schedule(comm);
 	}
 
 	public static void setCourse(String textCommand) {
@@ -115,8 +148,12 @@ public class Commands {
 	}
 
 	public static void setAltitudeDepth(String textCommand) {
-		// TODO Auto-generated method stub
-		
+		String[] input = textCommand.split("[\\s|]");
+		AgentID id = new AgentID(input[1]);
+		Altitude altitude = new Altitude(Double.parseDouble(input[4]));
+			
+		CommandActorSetAltitudeDepth comm = new CommandActorSetAltitudeDepth(CommandManagers.getInstance(), textCommand, id, altitude);
+		CommandManagers.getInstance().schedule(comm);
 	}
 	
 }
