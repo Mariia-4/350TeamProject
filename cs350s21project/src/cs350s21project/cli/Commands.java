@@ -24,6 +24,7 @@ import cs350s21project.datatype.Time;
 
 public class Commands {
 
+	//testing commit
 	//MUNITION COMMANDS
 	public static void defineBomb(String textCommand) {
 		String[] input = textCommand.split("\\s");

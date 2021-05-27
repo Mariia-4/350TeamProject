@@ -1,37 +1,37 @@
 package cs350s21project.cli;
 
-import cs350s21project.datatype.AgentID;
-import cs350s21project.datatype.Altitude;
-import cs350s21project.datatype.AttitudePitch;
-import cs350s21project.datatype.AttitudeYaw;
-import cs350s21project.datatype.CoordinateWorld3D;
-import cs350s21project.datatype.Course;
-import cs350s21project.datatype.DistanceNauticalMiles;
-import cs350s21project.datatype.FieldOfView;
-import cs350s21project.datatype.Groundspeed;
-import cs350s21project.datatype.Latitude;
-import cs350s21project.datatype.Longitude;
-import cs350s21project.datatype.Power;
-import cs350s21project.datatype.Sensitivity;
-import cs350s21project.datatype.Time;
+//import cs350s21project.datatype.AgentID;
+//import cs350s21project.datatype.Altitude;
+//import cs350s21project.datatype.AttitudePitch;
+//import cs350s21project.datatype.AttitudeYaw;
+//import cs350s21project.datatype.CoordinateWorld3D;
+//import cs350s21project.datatype.Course;
+//import cs350s21project.datatype.DistanceNauticalMiles;
+//import cs350s21project.datatype.FieldOfView;
+//import cs350s21project.datatype.Groundspeed;
+//import cs350s21project.datatype.Latitude;
+//import cs350s21project.datatype.Longitude;
+//import cs350s21project.datatype.Power;
+//import cs350s21project.datatype.Sensitivity;
+//import cs350s21project.datatype.Time;
 
 public class CommandInterpreter {
-	public AgentID id;
-	public Altitude altitude;
-	public AttitudeYaw azimuth;
-	public CoordinateWorld3D coordinates;
-	public Course course;
-	public DistanceNauticalMiles distance;
-	public AttitudePitch elevation;
-	public String filename;
-	public FieldOfView fov;
-	public Latitude latitude;
-	public Longitude longitude;
-	public Power power;
-	public Sensitivity sensitivity;
-	public int size;
-	public Groundspeed speed;
-	public Time time;
+//	public AgentID id;
+//	public Altitude altitude;
+//	public AttitudeYaw azimuth;
+//	public CoordinateWorld3D coordinates;
+//	public Course course;
+//	public DistanceNauticalMiles distance;
+//	public AttitudePitch elevation;
+//	public String filename;
+//	public FieldOfView fov;
+//	public Latitude latitude;
+//	public Longitude longitude;
+//	public Power power;
+//	public Sensitivity sensitivity;
+//	public int size;
+//	public Groundspeed speed;
+//	public Time time;
 	
 	public void evaluate(String textCommand) throws Exception {
 			if (textCommand == null || textCommand.isEmpty())
@@ -41,7 +41,7 @@ public class CommandInterpreter {
 			
 			for(int i = 0; i < commands.length; i++)
 			{
-				
+				//testing commit
 				//VIEWS COMMANDS
 				
 //				if(commands[i].contains("create window top view"))
