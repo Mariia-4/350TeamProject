@@ -4,18 +4,49 @@ import java.util.*;
 import cs350s21project.controller.CommandManagers;
 import cs350s21project.controller.command.actor.CommandActorCreateActor;
 import cs350s21project.controller.command.actor.CommandActorDefineShip;
+import cs350s21project.controller.command.actor.CommandActorDeployMunition;
+import cs350s21project.controller.command.actor.CommandActorDeployMunitionShell;
+import cs350s21project.controller.command.actor.CommandActorLoadMunition;
 import cs350s21project.controller.command.actor.CommandActorSetAltitudeDepth;
 import cs350s21project.controller.command.actor.CommandActorSetCourse;
 import cs350s21project.controller.command.actor.CommandActorSetSpeed;
+import cs350s21project.controller.command.actor.CommandActorSetState;
+import cs350s21project.controller.command.misc.CommandMiscExit;
+import cs350s21project.controller.command.misc.CommandMiscLoad;
+import cs350s21project.controller.command.misc.CommandMiscPause;
+import cs350s21project.controller.command.misc.CommandMiscResume;
+import cs350s21project.controller.command.misc.CommandMiscSetUpdate;
+import cs350s21project.controller.command.misc.CommandMiscWait;
+import cs350s21project.controller.command.munition.CommandMunitionDefineBomb;
+import cs350s21project.controller.command.munition.CommandMunitionDefineDepthCharge;
+import cs350s21project.controller.command.munition.CommandMunitionDefineMissile;
+import cs350s21project.controller.command.munition.CommandMunitionDefineShell;
+import cs350s21project.controller.command.munition.CommandMunitionDefineTorpedo;
+import cs350s21project.controller.command.sensor.CommandSensorDefineAcoustic;
+import cs350s21project.controller.command.sensor.CommandSensorDefineDepth;
+import cs350s21project.controller.command.sensor.CommandSensorDefineDistance;
+import cs350s21project.controller.command.sensor.CommandSensorDefineRadar;
+import cs350s21project.controller.command.sensor.CommandSensorDefineSonarActive;
+import cs350s21project.controller.command.sensor.CommandSensorDefineSonarPassive;
+import cs350s21project.controller.command.sensor.CommandSensorDefineThermal;
+import cs350s21project.controller.command.sensor.CommandSensorDefineTime;
 import cs350s21project.controller.command.view.CommandViewCreateWindowTop;
 import cs350s21project.controller.command.view.CommandViewDeleteWindow;
 import cs350s21project.datatype.AgentID;
 import cs350s21project.datatype.Altitude;
+import cs350s21project.datatype.AngleNavigational;
+import cs350s21project.datatype.AttitudePitch;
+import cs350s21project.datatype.AttitudeYaw;
 import cs350s21project.datatype.CoordinateWorld3D;
 import cs350s21project.datatype.Course;
+import cs350s21project.datatype.DistanceNauticalMiles;
+import cs350s21project.datatype.FieldOfView;
 import cs350s21project.datatype.Groundspeed;
 import cs350s21project.datatype.Latitude;
 import cs350s21project.datatype.Longitude;
+import cs350s21project.datatype.Power;
+import cs350s21project.datatype.Sensitivity;
+import cs350s21project.datatype.Time;
 
 public class Commands {
 	
@@ -155,5 +186,261 @@ public class Commands {
 		CommandActorSetAltitudeDepth comm = new CommandActorSetAltitudeDepth(CommandManagers.getInstance(), textCommand, id, altitude);
 		CommandManagers.getInstance().schedule(comm);
 	}
+	
+	//MISC COMMANDS----------------------------------------------------------
+	public static void miscLoad(String textCommand) {
+		String[] input = textCommand.split("\\s");
+		String filename = input[1];
+				
+		CommandMiscLoad comm = new CommandMiscLoad(CommandManagers.getInstance(), textCommand, filename);
+		CommandManagers.getInstance().schedule(comm);
+	}
+
+	public static void miscPause(String textCommand) {
+		CommandMiscPause comm = new CommandMiscPause(CommandManagers.getInstance(), textCommand);
+		CommandManagers.getInstance().schedule(comm);
+	}
+
+	public static void miscResume(String textCommand) {
+		CommandMiscResume comm = new CommandMiscResume(CommandManagers.getInstance(), textCommand);
+		CommandManagers.getInstance().schedule(comm);
+	}
+
+	public static void miscSetUpdate(String textCommand) {
+		String[] input = textCommand.split("\\s");
+		Time time = new Time(Double.parseDouble(input[2]));
+			
+		CommandMiscSetUpdate comm = new CommandMiscSetUpdate(CommandManagers.getInstance(), textCommand, time);
+		CommandManagers.getInstance().schedule(comm);
+	}
+
+	public static void miscWait(String textCommand) {
+		String[] input = textCommand.split("\\s");
+		Time time = new Time(Double.parseDouble(input[1]));
+				
+		CommandMiscWait comm = new CommandMiscWait(CommandManagers.getInstance(), textCommand, time);
+		CommandManagers.getInstance().schedule(comm);
+	}
+
+	public static void setState(String textCommand) {
+		String[] input = textCommand.split("\\s");
+		AgentID id = new AgentID(input[1]);
+				
+		String[] coord = input[4].split("/");
+		Altitude altitude = new Altitude(Double.parseDouble(coord[2]));
+
+		int d;
+		int m;
+		double s;
+		//Further split latitude and longitude to get degrees, minutes, seconds
+		String[] lat = coord[0].split("[*'\"]");
+		d = Integer.parseInt(lat[0]);
+		m = Integer.parseInt(lat[1]);
+		s = Double.parseDouble(lat[2]);
+		Latitude latitude = new Latitude(d, m, s);
+			
+		String[] lon = coord[1].split("[*'\"]");
+		d = Integer.parseInt(lon[0]);
+		m = Integer.parseInt(lon[1]);
+		s = Double.parseDouble(lon[2]);
+		Longitude longitude = new Longitude(d, m, s);
+
+		CoordinateWorld3D coordinate = new CoordinateWorld3D(latitude, longitude, altitude);
+				
+		Course course = new Course(Double.parseDouble(input[7]));
+			
+		Groundspeed speed = new Groundspeed(Double.parseDouble(input[9]));
+				
+		CommandActorSetState comm = new CommandActorSetState(CommandManagers.getInstance(), textCommand, id, coordinate, course, speed);
+		CommandManagers.getInstance().schedule(comm);
+				
+	}
+
+	public static void miscExit(String textCommand) {
+		CommandMiscExit comm = new CommandMiscExit(CommandManagers.getInstance(), textCommand);
+		CommandManagers.getInstance().schedule(comm);
+	}
+			
+	//SENSOR/FUZES COMMANDS-----------------------------------------
+	public static void defineRadar(String textCommand) 
+	{
+		String[] input = textCommand.split("\\s");
+				
+		AgentID id = new AgentID(input[3]);
+		AngleNavigational angle = new AngleNavigational(Double.parseDouble(input[8]));
+		FieldOfView fov = new FieldOfView(angle);
+		Power p = new Power(Double.parseDouble(input[10]));
+		Sensitivity sen = new Sensitivity(Double.parseDouble((input[12])));
+				
+		CommandSensorDefineRadar comm = new CommandSensorDefineRadar(CommandManagers.getInstance(), textCommand, id, fov, p, sen);
+		CommandManagers.getInstance().schedule(comm);	
+	}
+	
+	public static void defineThermal(String textCommand) 
+	{		
+		String[] input = textCommand.split("\\s");
+				
+		AgentID id = new AgentID(input[3]);
+		AngleNavigational angle = new AngleNavigational(Double.parseDouble(input[8]));
+		FieldOfView fov = new FieldOfView(angle);
+		Sensitivity sen = new Sensitivity(Double.parseDouble((input[10])));
+				
+		CommandSensorDefineThermal comm = new CommandSensorDefineThermal(CommandManagers.getInstance(), textCommand, id, fov, sen);
+		CommandManagers.getInstance().schedule(comm);		
+	}
+
+	public static void defineAcoustic(String textCommand) 
+	{
+		String[] input = textCommand.split("\\s");
+		AgentID id = new AgentID(input[3]);
+				
+		Sensitivity sen = new Sensitivity(Double.parseDouble((input[6])));
+				
+		CommandSensorDefineAcoustic comm = new CommandSensorDefineAcoustic(CommandManagers.getInstance(), textCommand, id, sen);
+		CommandManagers.getInstance().schedule(comm);	
+	}
+
+	public static void defineSonarActive(String textCommand) 
+	{
+		String[] input = textCommand.split("\\s");
+				
+		AgentID id = new AgentID(input[4]);
+		Sensitivity sen = new Sensitivity(Double.parseDouble((input[9])));
+		Power p = new Power(Double.parseDouble(input[7]));
+				
+		CommandSensorDefineSonarActive comm = new CommandSensorDefineSonarActive(CommandManagers.getInstance(), textCommand, id, p, sen);
+		CommandManagers.getInstance().schedule(comm);
+	}
+
+	public static void defineSonarPassive(String textCommand) 
+	{
+		String[] input = textCommand.split("\\s");
+				
+		AgentID id = new AgentID(input[4]);
+		Sensitivity sen = new Sensitivity(Double.parseDouble((input[7])));
+				
+		CommandSensorDefineSonarPassive comm = new CommandSensorDefineSonarPassive(CommandManagers.getInstance(), textCommand, id, sen);
+		CommandManagers.getInstance().schedule(comm);
+	}
+
+			
+	public static void defineDepth(String textCommand) 
+	{
+		String[] input = textCommand.split("\\s");
+				
+		AgentID id = new AgentID(input[3]);
+		Altitude alt = new Altitude(Integer.parseInt((input[7])));
+				
+		CommandSensorDefineDepth comm = new CommandSensorDefineDepth(CommandManagers.getInstance(), textCommand, id, alt);
+		CommandManagers.getInstance().schedule(comm);
+	}
+
+	public static void defineDistance(String textCommand) 
+	{
+		String[] input = textCommand.split("\\s");
+				
+		AgentID id = new AgentID(input[3]);
+		DistanceNauticalMiles dis = new DistanceNauticalMiles(Double.parseDouble(input[7]));
+				
+		CommandSensorDefineDistance comm = new CommandSensorDefineDistance(CommandManagers.getInstance(), textCommand, id, dis);
+		CommandManagers.getInstance().schedule(comm);	
+	}
+
+	public static void defineTime(String textCommand) 
+	{
+		String[] input = textCommand.split("\\s");
+				
+		AgentID id = new AgentID(input[3]);
+		Time time = new Time(Double.parseDouble(input[7]));
+				
+		CommandSensorDefineTime comm = new CommandSensorDefineTime(CommandManagers.getInstance(), textCommand, id, time);
+		CommandManagers.getInstance().schedule(comm);
+	}
+			
+
+	//MUNITION COMMANDS
+	public static void defineBomb(String textCommand) {
+		String[] input = textCommand.split("\\s");
+					
+		AgentID ID = new AgentID(input[3]);
+					
+		CommandMunitionDefineBomb comm = new CommandMunitionDefineBomb(CommandManagers.getInstance(), textCommand, ID);
+		CommandManagers.getInstance().schedule(comm);
+	}
+
+	public static void defineShell(String textCommand) {
+		String[] input = textCommand.split("\\s");
+					
+		AgentID ID = new AgentID(input[3]);
+					
+		CommandMunitionDefineShell comm = new CommandMunitionDefineShell(CommandManagers.getInstance(), textCommand, ID);
+		CommandManagers.getInstance().schedule(comm);
+	}
+
+	public static void defineDepthCharge(String textCommand) {
+		String[] input = textCommand.split("\\s");
+					
+		AgentID idMunition = new AgentID(input[3]);
+		AgentID idFuze = new AgentID(input[6]);
+				
+		CommandMunitionDefineDepthCharge comm = new CommandMunitionDefineDepthCharge(CommandManagers.getInstance(), textCommand, idMunition, idFuze);
+		CommandManagers.getInstance().schedule(comm);
+	}
+
+	public static void defineTorpedo(String textCommand) {
+		String[] input = textCommand.split("\\s");
+					
+		AgentID idMunition = new AgentID(input[3]);				
+		AgentID idSensor = new AgentID(input[6]);
+		AgentID idFuze = new AgentID(input[8]);
+		Time time = new Time(Double.parseDouble(input[11]));
+					
+		CommandMunitionDefineTorpedo comm = new CommandMunitionDefineTorpedo(CommandManagers.getInstance(), textCommand, idMunition,idSensor, idFuze, time);
+		CommandManagers.getInstance().schedule(comm);
+	}
+
+	public static void defineMissile(String textCommand) {
+		String[] input = textCommand.split("\\s");
+					
+		AgentID idMunition = new AgentID(input[3]);
+		AgentID idSensor = new AgentID(input[6]);
+		AgentID idFuze = new AgentID(input[8]);				
+		DistanceNauticalMiles distance = new DistanceNauticalMiles(Double.parseDouble(input[11]));
+				
+		CommandMunitionDefineMissile comm = new CommandMunitionDefineMissile(CommandManagers.getInstance(), textCommand, idMunition,idSensor, idFuze, distance);
+		CommandManagers.getInstance().schedule(comm);
+	}
+				
+	public static void loadMunition(String textCommand) {
+		String[] input = textCommand.split("\\s");
+					
+		AgentID idActor = new AgentID(input[1]);
+		AgentID idMunition = new AgentID(input[4]);
+					
+		CommandActorLoadMunition comm = new CommandActorLoadMunition(CommandManagers.getInstance(), textCommand, idActor, idMunition);
+		CommandManagers.getInstance().schedule(comm);
+	}
+
+	public static void deployMunition(String textCommand) {
+		String[] input = textCommand.split("\\s");
+					
+		AgentID idActor = new AgentID(input[1]);
+		AgentID idMunition = new AgentID(input[4]);
+					
+		CommandActorDeployMunition comm = new CommandActorDeployMunition(CommandManagers.getInstance(), textCommand, idActor, idMunition);
+		CommandManagers.getInstance().schedule(comm);
+	}
+
+	public static void deployMunitionShell(String textCommand) {
+		String[] input = textCommand.split("\\s");
+					
+		AgentID idActor = new AgentID(input[1]);
+		AgentID idMunition = new AgentID(input[4]);
+		AttitudeYaw azimuth = new AttitudeYaw(Double.parseDouble(input[7]));
+		AttitudePitch elevation = new AttitudePitch(Double.parseDouble(input[9]));
+					
+		CommandActorDeployMunitionShell comm = new CommandActorDeployMunitionShell(CommandManagers.getInstance(), textCommand, idActor, idMunition, azimuth, elevation);
+		CommandManagers.getInstance().schedule(comm);
+	}		
 	
 }
