@@ -110,12 +110,12 @@ public class Commands {
 	
 	//ACTOR COMMANDS
 	public static void defineShip(String textCommand) {
-		String[] input = textCommand.split("\\s");
+		String[] input = textCommand.split("[\\s()]");
 		AgentID id = new AgentID(input[2]);
 		
 		//create list of AgentID's to save each munition 
 		List<AgentID> munitions = new ArrayList<AgentID>();
-		int i = 4;
+		int i = 6;
 		while(i < input.length) {
 			AgentID m = new AgentID(input[i]);
 			munitions.add(m);
